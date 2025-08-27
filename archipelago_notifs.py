@@ -16,7 +16,7 @@ client = discord.Client(intents=intents)
 recorded_actions = get_recent_archipelago_actions()
 updates_channel = None
 
-@tasks.loop(seconds=5.0)
+@tasks.loop(seconds=40.0)
 async def archipelago_updates():
     global recorded_actions
     global updates_channel
