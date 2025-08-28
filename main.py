@@ -6,7 +6,7 @@ import os
 
 # custom modules
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
-from notifications import parse_usr_msg
+from notifications import parse_usr_msg, save_notifs_to_file
 
 
 bot_token = os.environ['BOT_TOKEN']
@@ -37,6 +37,8 @@ async def archipelago_updates():
     updated_actions = get_recent_archipelago_actions()
     newly_added = check_for_new_archipelago_actions(recorded_actions, updated_actions)
 
+    notifs_list_updated = False
+
     for update in newly_added.values():
         # send the regular update
         msg_content = f"***{update['Finder']}*** found ***\"{update['Item']}\"*** for ***{update['Receiver']}!!!***"
@@ -50,9 +52,15 @@ async def archipelago_updates():
                 await updates_channel.send("@"+notification.username+" update['Finder'] has found "+update['Item']+" for "+update['Receiver']+"!")
                 indicesToRemove.append(index)
 
+        if (len(indicesToRemove) > 0):
+            notifs_list_updated = True
+
         indicesToRemove.sort(reverse=True)
         for index in indicesToRemove:
             current_notifications.pop(index)
+
+    if(notifs_list_updated):
+        save_notifs_to_file()
 
     recorded_actions = updated_actions
 

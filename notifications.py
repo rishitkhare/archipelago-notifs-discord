@@ -4,10 +4,24 @@
 # said item is obtained by another player.
 
 from collections import namedtuple
+import pickle
 
+filename = "saved_notifs.json"
 current_notifications = []
+load_notifs_from_file()
 
 Notification = namedtuple('Notification', ['username', 'itemName', "playName"])
+
+def load_notifs_from_file():
+    if(os.path.isfile(filename)):
+        with open(filename, 'rb') as file:
+            current_notifications = pickle.load(file)
+    else:
+        current_notifications = []
+
+def save_notifs_to_file():
+    file = open(filename, 'wb+')
+    pickle.dump(current_notifications, file)
 
 async def add_notification(username, itemName, playerName, channel):
     duplicateNotif = False
@@ -22,6 +36,8 @@ async def add_notification(username, itemName, playerName, channel):
         current_notifications.append(Notification(username, itemName, playerName))
         await channel.send("Notification added!")
 
+    save_notifs_to_file()
+
 async def remove_notification(itemName, playerName, channel):
     notifIndex = -1
     for index, notification in current_notifications:
@@ -34,6 +50,7 @@ async def remove_notification(itemName, playerName, channel):
     else:
         current_notifications.pop(notifIndex)
         await channel.send("Notification removed!")
+    save_notifs_to_file()
 
 async def list_notifications(channel):
     # list all active notifications
@@ -47,8 +64,6 @@ async def list_notifications(channel):
         await channel.send(notifsListStr)
 
 async def parse_usr_msg(message):
-    global current_notifications
-
     args = message.content[1].split(" ")
     argsLen = args.len()
 
