@@ -6,7 +6,7 @@ import os
 
 # custom modules
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
-from notifications import parse_usr_msg, current_notifications
+from notifications import parse_usr_msg, current_notifications, save_notifs_to_file
 
 
 bot_token = os.environ['BOT_TOKEN']
@@ -37,6 +37,8 @@ async def archipelago_updates():
     updated_actions = get_recent_archipelago_actions()
     newly_added = check_for_new_archipelago_actions(recorded_actions, updated_actions)
 
+    notifs_list_updated = False
+
     for update in newly_added.values():
 
         # check for any matching notifications
@@ -59,8 +61,9 @@ async def archipelago_updates():
 
         if existingNotif:
             current_notifications.remove(existingNotif)
+            save_notifs_to_file()
 
-        if not existingNotif:
+        else:
             # nobody signed up for pings, so give the message normally
             msg_content = f"***{update['Finder']}*** found ***\"{update['Item']}\"*** for ***{update['Receiver']}!!!***"
             print(f'sending this update:\n{msg_content}\n')
