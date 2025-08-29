@@ -4,53 +4,91 @@
 # said item is obtained by another player.
 
 from collections import namedtuple
+import shlex
 
 current_notifications = []
 
-Notification = namedtuple('Notification', ['username', 'itemName', "playName"])
+Notification = namedtuple('Notification', ['userIDs', 'usernames', 'itemName', "playerName"])
 
-async def add_notification(username, itemName, playerName, channel):
-    duplicateNotif = False
-    for notification in current_notifications:
+async def add_notification(user, itemName, playerName, channel):
+    userID = user.id
+    username = user.name
+
+    existingNotifIndex = -1
+    for i, notification in enumerate(current_notifications):
         if (notification.itemName == itemName and notification.playerName == playerName):
-            duplicateNotif = True
+            existingNotifIndex = i
             break
 
-    if (duplicateNotif):
-        await channel.send("Error: notification already exists!")
+    if existingNotifIndex != -1:
+        existingNotif = current_notifications[existingNotifIndex]
+
+        if userID in existingNotif.userIDs:
+            await channel.send("You are already signed up for this notification!")
+            return
+
+        existingNotif.userIDs.append(userID)
+        existingNotif.usernames.append(username)
+
+        await channel.send("Notification added!")
     else:
-        current_notifications.append(Notification(username, itemName, playerName))
+        current_notifications.append(Notification([userID], [username], itemName, playerName))
         await channel.send("Notification added!")
 
-async def remove_notification(itemName, playerName, channel):
+async def remove_notification(user, itemName, playerName, channel):
+    userID = user.id
+    username = user.name
+
     notifIndex = -1
-    for index, notification in current_notifications:
+    for index, notification in enumerate(current_notifications):
         if (notification.itemName == itemName and notification.playerName == playerName):
             notifIndex = index
             break
 
     if (notifIndex == -1):
-        await channel.send("Error: notification not found!")
+        await channel.send("This notification does not exist!")
     else:
-        current_notifications.pop(notifIndex)
+        notifObj = current_notifications[notifIndex]
+
+        if not userID in notifObj.userIDs:
+            await channel.send("Cannot remove: You are not signed up for this notification!")
+            return
+
+        # remove the entire notification object or just remove that user (if they are not the only one subscribed)
+        if len(notifObj.usernames) == 1:
+            current_notifications.pop(notifIndex)
+        else:
+            notifObj.userIDs.remove(userID)
+            notifObj.usernames.remove(username)
+
         await channel.send("Notification removed!")
 
 async def list_notifications(channel):
+    print("running list command")
+
     # list all active notifications
     if (len(current_notifications) == 0):
         await channel.send('There are no active notifications!')
     else:
-        notifsListStr = "Active notifications.py:"
+        notifsListStr = "Active notifications:\n```"
         for notification in current_notifications:
-            notifsListStr += (
-                    "\n-Will ping " + notification.username + " when \"" + notification.itemName + "\" is given to player: \"" + notification.playerName + "\"")
+            notifsListStr += f"\n* {notification.itemName} ==> {notification.playerName} (notifies "
+
+            for i in range(len(notification.usernames)):
+                if i != 0:
+                    notifsListStr += ", "
+
+                notifsListStr += f"{notification.usernames[i]}"
+            notifsListStr += ")"
+        notifsListStr += "```"
         await channel.send(notifsListStr)
 
 async def parse_usr_msg(message):
     global current_notifications
 
-    args = message.content[1].split(" ")
-    argsLen = args.len()
+    args = shlex.split(message.content[1:])
+    argsLen = len(args)
+    print(args)
 
     if (argsLen > 0 and args[0].lower() == "notify"):
         if (argsLen == 1):
@@ -65,11 +103,11 @@ async def parse_usr_msg(message):
                     await send_usage_help_msg(message.channel)
                     return
 
-                username = message.author.name
-                itemName = args[1].lower()
-                playerName = args[2].lower()
+                user = message.author
+                itemName = args[2].lower().strip()
+                playerName = args[3].lower().strip()
 
-                await add_notification(username,itemName,playerName,message.channel)
+                await add_notification(user,itemName,playerName,message.channel)
 
             case "remove":
                 # remove an existing notification (if a matching one exists)
@@ -77,10 +115,10 @@ async def parse_usr_msg(message):
                     await send_usage_help_msg(message.channel)
                     return
 
-                itemName = args[1].lower()
-                playerName = args[2].lower()
+                itemName = args[2].lower().strip()
+                playerName = args[3].lower().strip()
 
-                await remove_notification(itemName, playerName, message.channel)
+                await remove_notification(message.author, itemName, playerName, message.channel)
 
             case "list":
                 await list_notifications(message.channel)
