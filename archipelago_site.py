@@ -27,8 +27,6 @@ def get_recent_archipelago_actions(n=-1):
     columns = [col.text_content().strip() for col in table[0].xpath("tr/th")]
     body = table[1]
 
-    print(columns)
-
     result = {}
 
     for entry in body:
