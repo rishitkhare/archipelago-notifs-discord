@@ -6,6 +6,7 @@
 from collections import namedtuple
 import shlex
 import pickle
+import os
 
 filename = "saved_notifs.json"
 current_notifications = []
