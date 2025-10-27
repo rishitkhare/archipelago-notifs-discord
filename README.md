@@ -1,7 +1,7 @@
 # Archipelago Notifications Bot ("The Argo")
 
 This is the source code for a discord bot that scrapes from an archipelago.gg sphere tracker once deployed and sends discord message updates whenever a new item is collected. To deploy it, use 
-the [Discord Developer Portal](https://discord.com/developers) to register a bot to use their API.
+the [Discord Developer Portal](https://discord.com/developers) to register a bot to use their API. Please use a virtual environment with Python 3.11 or higher.
 
 When running the script, make sure the following packages are installed to your venv:
  - [discord.py](https://pypi.org/project/discord.py/)
