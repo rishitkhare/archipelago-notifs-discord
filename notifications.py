@@ -43,6 +43,8 @@ burger_king_messages = [
 burger_king_message_probs = [0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.07, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02]
 
 def load_notifs_from_file():
+    global current_notifications
+
     if(os.path.isfile(filename)):
         with open(filename, 'rb') as file:
             current_notifications = pickle.load(file)
@@ -50,6 +52,7 @@ def load_notifs_from_file():
         current_notifications = []
 
 def load_patrons_from_bk():
+    global current_burger_king_patrons
     if(os.path.isfile(bkfilename)):
         with open(bkfilename, 'rb') as file:
             current_burger_king_patrons = pickle.load(file)
@@ -149,7 +152,7 @@ async def go_to_burger_king(playerName, channel):
 
     save_patrons_to_bk()
 
-async def leave_burger_king(PlayerName, channel):
+async def leave_burger_king(playerName, channel):
     if (playerName in current_burger_king_patrons):
         current_burger_king_patrons.remove(playerName)
         await channel.send(f"{playerName} walks back home from Burger King")
@@ -228,7 +231,7 @@ async def parse_usr_msg(message):
 
                 await leave_burger_king(playerName, message.channel)
             case "listbk":
-                await list_burger_king_patrons(playerName, message.channel)
+                await list_burger_king_patrons(message.channel)
                 
             case _:
                 await send_usage_help_msg(message.channel)
