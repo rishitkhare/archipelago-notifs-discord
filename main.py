@@ -6,7 +6,7 @@ import os
 
 # custom modules
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
-from notifications import parse_usr_msg, current_notifications, save_notifs_to_file
+from notifications import parse_usr_msg, current_notifications, save_notifs_to_file, load_notifs_from_file, load_patrons_from_bk
 
 
 bot_token = os.environ['BOT_TOKEN']
@@ -96,5 +96,9 @@ async def on_message(message):
     if client.user.mentioned_in(message):
         updates_channel = message.channel
         await message.channel.send('Archipelago updates will now occur in this channel!')
+
+
+load_notifs_from_file()
+load_patrons_from_bk()
 
 client.run(bot_token)

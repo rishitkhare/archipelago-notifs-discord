@@ -28,14 +28,14 @@ burger_king_messages = [
     "is sleeping in a booth",
     "is sleeping on the floor",
     "got burger king foot lettuce", # rare
-    "got an onion ring in their fries" # rare
-    "got a fry in their onion rings" # rare
+    "got an onion ring in their fries", # rare
+    "got a fry in their onion rings", # rare
     "is complaining to the manager", # rare
     "is staring wistfully out the window", # rare
     "is staring wistfully at a rat", # epic
-    "is sipping on promethazine (they can't put down the cup)" # epic
-    "is looking out the window at somebody coming in\n(doo-doo-doo-doo, doo-do-dooo-doo doo-doo-doo-doo-do-doo-doo)" # epic
-    "is checking the clopen sign" # epic
+    "is sipping on promethazine (they can't put down the cup)", # epic
+    "is looking out the window at somebody coming in\n(doo-doo-doo-doo, doo-do-dooo-doo doo-doo-doo-doo-do-doo-doo)", # epic
+    "is checking the clopen sign", # epic
     "thinks this might be a burger king for rats" # epic
 ]
 
@@ -170,7 +170,7 @@ async def list_burger_king_patrons(channel):
         bkListStr = "```"
         for patron in current_burger_king_patrons:
             msg = np.random.choice(burger_king_messages, 1, p=burger_king_message_probs)
-            bkListStr += f"\n* {patron} {msg} "
+            bkListStr += f"\n* {patron} {msg[0]} "
         bkListStr += "```"
         await channel.send(bkListStr)
 
