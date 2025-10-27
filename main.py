@@ -25,6 +25,7 @@ async def archipelago_updates():
     global recorded_actions
     global updates_channel
     global current_notifications
+    global current_burger_king_patrons
 
     # if an updates channel has not been specified, skip over the routine for now.
     # This allows updates that were added before the channel was specified to stack up
@@ -56,6 +57,9 @@ async def archipelago_updates():
                     pinglist += f"<@{notification.userIDs[i]}>"
 
                 await updates_channel.send(f"# ARCHIPELAGO UPDATE!\n{pinglist}\n***{update['Finder']}*** has found ***{update['Item']}*** for ***{update['Receiver']}***!")
+                # if an important item has been found, the receiver can become a burger king leaver
+                if update['Receiver'] in current_burger_king_patrons:
+                    current_burger_king_patrons.remove(update['Receiver'])
 
                 break
 
