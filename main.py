@@ -6,7 +6,7 @@ import os
 
 # custom modules
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
-from notifications import parse_usr_msg, current_notifications, save_notifs_to_file
+from notifications import parse_usr_msg, current_notifications, save_notifs_to_file, load_notifs_from_file, load_patrons_from_bk
 
 
 bot_token = os.environ['BOT_TOKEN']
@@ -25,6 +25,7 @@ async def archipelago_updates():
     global recorded_actions
     global updates_channel
     global current_notifications
+    global current_burger_king_patrons
 
     # if an updates channel has not been specified, skip over the routine for now.
     # This allows updates that were added before the channel was specified to stack up
@@ -56,6 +57,9 @@ async def archipelago_updates():
                     pinglist += f"<@{notification.userIDs[i]}>"
 
                 await updates_channel.send(f"# ARCHIPELAGO UPDATE!\n{pinglist}\n***{update['Finder']}*** has found ***{update['Item']}*** for ***{update['Receiver']}***!")
+                # if an important item has been found, the receiver can become a burger king leaver
+                if update['Receiver'] in current_burger_king_patrons:
+                    current_burger_king_patrons.remove(update['Receiver'])
 
                 break
 
@@ -92,5 +96,9 @@ async def on_message(message):
     if client.user.mentioned_in(message):
         updates_channel = message.channel
         await message.channel.send('Archipelago updates will now occur in this channel!')
+
+
+load_notifs_from_file()
+load_patrons_from_bk()
 
 client.run(bot_token)
