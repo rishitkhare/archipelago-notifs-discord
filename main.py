@@ -6,7 +6,7 @@ import os
 
 # custom modules
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
-from notifications import parse_usr_msg, current_notifications, save_notifs_to_file, load_notifs_from_file, load_patrons_from_bk
+from notifications import parse_usr_msg, current_notifications, save_notifs_to_file, load_notifs_from_file, load_patrons_from_bk, current_burger_king_patrons
 
 
 bot_token = os.environ['BOT_TOKEN']
@@ -37,8 +37,6 @@ async def archipelago_updates():
     # from the last visit to see what was newly added
     updated_actions = get_recent_archipelago_actions()
     newly_added = check_for_new_archipelago_actions(recorded_actions, updated_actions)
-
-    notifs_list_updated = False
 
     for update in newly_added.values():
 
