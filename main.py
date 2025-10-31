@@ -7,7 +7,7 @@ import os
 # custom modules
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
 from notifications import parse_usr_msg, current_notifications, save_notifs_to_file, load_notifs_from_file, load_patrons_from_bk, current_burger_king_patrons
-
+from datetime import datetime, timezone
 
 bot_token = os.environ['BOT_TOKEN']
 tracker_site_ip = os.environ["TRACKER_SITE_URL"]
@@ -73,7 +73,16 @@ async def archipelago_updates():
 
     recorded_actions = updated_actions
 
-    print("performed routine check")
+    # log the time of the routine
+
+    # Get the current UTC datetime object
+    utc_now = datetime.now(timezone.utc)
+
+    # Format the datetime object into a string
+    # Example format: "2025-10-31 18:43:00 UTC"
+    utc_timestamp_string = utc_now.strftime("%Y-%m-%d %H:%M:%S UTC")
+
+    print(f"[{utc_timestamp_string}] performed scraping routine")
 
 @client.event
 async def on_ready():
