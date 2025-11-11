@@ -1,12 +1,13 @@
 import requests
 import os
 import lxml
+from datetime import datetime, timezone
 from lxml import html
 
 tracker_site_ip = os.environ["TRACKER_SITE_URL"]
 
+
 def _load_tracker_site():
-    tracker_site_ip = os.environ["TRACKER_SITE_URL"]
 
     try:
         response = requests.get(tracker_site_ip)
@@ -22,6 +23,13 @@ def _get_hashable_key(entry):
 # gets the n most recent actions as an array of dictionaries.
 def get_recent_archipelago_actions(n=-1):
     tracker_site_html = _load_tracker_site()
+
+    if not tracker_site_html:
+        utc_now = datetime.now(timezone.utc)
+        utc_timestamp_string = utc_now.strftime("%Y-%m-%d %H:%M:%S UTC")
+
+        print(f"[{utc_timestamp_string}] [WARNING ] Failed to retrieve site!")
+        return {}
 
     table = html.fromstring(tracker_site_html).find(".//table[@id='checks-table']")
     columns = [col.text_content().strip() for col in table[0].xpath("tr/th")]
