@@ -8,6 +8,7 @@ import shlex
 import pickle
 import os
 import numpy as np
+from datetime import datetime, timezone
 
 filename = "saved_notifs.json"
 bkfilename = "patron_list.json"
@@ -94,9 +95,15 @@ async def add_notification(user, itemName, playerName, channel):
 
     save_notifs_to_file()
 
-async def remove_notification(user, itemName, playerName, channel):
-    userID = user.id
-    username = user.name
+async def remove_notification(user, itemName, playerName, channel=None, uid=-1, uname=""):
+
+    # allow for direct discord.py user object or specify uid/uname manually
+    if user:
+        userID = user.id
+        username = user.name
+    else:
+        userID = uid
+        username = uname
 
     notifIndex = -1
     for index, notification in enumerate(current_notifications):
@@ -105,12 +112,24 @@ async def remove_notification(user, itemName, playerName, channel):
             break
 
     if (notifIndex == -1):
-        await channel.send("This notification does not exist!")
+        msg = "This notification does not exist!"
+        if channel:
+            await channel.send(msg)
+        else:
+            utc_now = datetime.now(timezone.utc)
+            utc_timestamp_string = utc_now.strftime("%Y-%m-%d %H:%M:%S UTC")
+            print(f"[{utc_timestamp_string}] {msg}")
     else:
         notifObj = current_notifications[notifIndex]
 
         if not userID in notifObj.userIDs:
-            await channel.send("Cannot remove: You are not signed up for this notification!")
+            msg = f"Cannot remove: {username} is not signed up for this notification!"
+            if channel:
+                await channel.send(msg)
+            else:
+                utc_now = datetime.now(timezone.utc)
+                utc_timestamp_string = utc_now.strftime("%Y-%m-%d %H:%M:%S UTC")
+                print(f"[{utc_timestamp_string}] {msg}")
             return
 
         # remove the entire notification object or just remove that user (if they are not the only one subscribed)
@@ -120,7 +139,13 @@ async def remove_notification(user, itemName, playerName, channel):
             notifObj.userIDs.remove(userID)
             notifObj.usernames.remove(username)
 
-        await channel.send("Notification removed!")
+        msg = "Notification removed!"
+        if channel:
+            await channel.send(msg)
+        else:
+            utc_now = datetime.now(timezone.utc)
+            utc_timestamp_string = utc_now.strftime("%Y-%m-%d %H:%M:%S UTC")
+            print(f"[{utc_timestamp_string}] {msg}")
     save_notifs_to_file()
 
 async def list_notifications(channel):
