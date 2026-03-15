@@ -5,7 +5,7 @@
 
 from collections import namedtuple
 import shlex
-import pickle
+import json
 import os
 import numpy as np
 from datetime import datetime, timezone
@@ -47,26 +47,26 @@ def load_notifs_from_file():
     global current_notifications
 
     if(os.path.isfile(filename)):
-        with open(filename, 'rb') as file:
-            current_notifications = pickle.load(file)
+        with open(filename, 'r') as file:
+            current_notifications = json.load(file)
     else:
         current_notifications = []
 
 def load_patrons_from_bk():
     global current_burger_king_patrons
     if(os.path.isfile(bkfilename)):
-        with open(bkfilename, 'rb') as file:
-            current_burger_king_patrons = pickle.load(file)
+        with open(bkfilename, 'r') as file:
+            current_burger_king_patrons = json.load(file)
     else:
         current_burger_king_patrons = []
 
 def save_notifs_to_file():
-    file = open(filename, 'wb+')
-    pickle.dump(current_notifications, file)
+    file = open(filename, 'w+')
+    json.dump(current_notifications, file)
 
 def save_patrons_to_bk():
-    file = open(bkfilename, 'wb+')
-    pickle.dump(current_burger_king_patrons, file)
+    file = open(bkfilename, 'w+')
+    json.dump(current_burger_king_patrons, file)
 
 async def add_notification(user, itemName, playerName, channel):
     userID = user.id
@@ -263,6 +263,3 @@ async def parse_usr_msg(message):
 
 async def send_usage_help_msg(channel):
     await channel.send('Unrecognized command. Usage:\n!notify add [ItemName] [PlayerName]\n!notify remove [ItemName] [PlayerName]\n!notify list\n!notify gotobk [PlayerName]\n!notify leavebk [PlayerName]\n!notify listbk')
-
-
-load_notifs_from_file()
