@@ -1,24 +1,20 @@
-# This example requires the 'message_content' intent.
-
+from dotenv import load_dotenv
 import discord
 from discord.ext import tasks
 import os
 
-# custom modules
+# custom module imports
 from archipelago_site import get_recent_archipelago_actions, check_for_new_archipelago_actions
 from notifications import remove_notification, parse_usr_msg, current_notifications, save_notifs_to_file, load_notifs_from_file, load_patrons_from_bk, current_burger_king_patrons
 from datetime import datetime, timezone
 
-bot_token = os.environ['BOT_TOKEN']
-tracker_site_ip = os.environ["TRACKER_SITE_URL"]
+# globals
+recorded_actions = {}
+updates_channel = None
 
 intents = discord.Intents.default()
 intents.message_content = True
-
 client = discord.Client(intents=intents)
-
-recorded_actions = get_recent_archipelago_actions()
-updates_channel = None
 
 # fires off notifications messages for the values in "for_values" to the updates channel.
 # If allow_unregistered is False, then mute any notifications that don't ping a specific user.
@@ -62,7 +58,6 @@ async def fire_notif_msgs(for_values, allow_unregistered=True):
             msg_content = f"***{update['Finder']}*** found ***\"{update['Item']}\"*** for ***{update['Receiver']}!!!***"
             print(f'sending this update:\n{msg_content}\n')
             await updates_channel.send(msg_content)
-
 
 @tasks.loop(seconds=20.0)
 async def archipelago_updates():
@@ -129,8 +124,28 @@ async def on_message(message):
         await message.channel.send('Archipelago updates will now occur in this channel!')
 
 
-load_notifs_from_file()
+# Main function initializes .env vars and global variables, then initializes the bot
+# with the appropriate intents.
+def main():
+    global recorded_actions
 
-load_patrons_from_bk()
+    try:
+        load_dotenv()
 
-client.run(bot_token)
+        recorded_actions = get_recent_archipelago_actions()
+
+        load_notifs_from_file()
+        load_patrons_from_bk()
+    except Exception as e:
+        print("something went wrong: ", e)
+        while(True):
+            pass
+
+
+    client.run(os.environ['BOT_TOKEN'])
+
+
+if __name__ == "__main__":
+    main()
+
+

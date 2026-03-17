@@ -4,10 +4,9 @@ import lxml
 from datetime import datetime, timezone
 from lxml import html
 
-tracker_site_ip = os.environ["TRACKER_SITE_URL"]
-
 
 def _load_tracker_site():
+    tracker_site_ip = os.environ["TRACKER_SITE_URL"]
 
     try:
         response = requests.get(tracker_site_ip)
@@ -58,5 +57,3 @@ def check_for_new_archipelago_actions(old_set, new_set):
             new_actions[entry_hash] = entry
 
     return new_actions
-
-get_recent_archipelago_actions()

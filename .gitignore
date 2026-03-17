@@ -4,3 +4,4 @@ __pycache__
 
 patron_list.json
 saved_notifs.json
+.env
