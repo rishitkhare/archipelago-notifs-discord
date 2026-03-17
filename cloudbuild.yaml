@@ -14,19 +14,33 @@ steps:
   ]
 
 # 3. Deploy the image to Cloud Run
+# - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+#   entrypoint: gcloud
+#   args:
+#     - 'compute'
+#     - 'instances'
+#     - 'update-container'
+#     - 'argobot-vm'
+#     - '--zone'
+#     - 'us-central1-a'
+#     - '--container-image'
+#     - 'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
+#     - '--container-env-file'
+#     - '/home/AdarshKhare/.env'
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-  entrypoint: gcloud
+  entrypoint: 'bash'
   args:
-    - 'compute'
-    - 'instances'
-    - 'update-container'
-    - 'argobot-vm'
-    - '--zone'
-    - 'us-central1-a'
-    - '--container-image'
-    - 'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
-    - '--container-env-file'
-    - '/home/AdarshKhare/.env'
+    - '-c'
+    - |
+      gcloud compute ssh argobot-vm --zone=us-central1-a --command=" \
+        docker pull gcr.io/$PROJECT_ID/argobot && \
+        docker stop argobot || true && \
+        docker rm argobot || true && \
+        docker run -d \
+          --name argobot \
+          --env-file /home/AdarshKhare/.env \
+          --restart unless-stopped \
+          gcr.io/$PROJECT_ID/argobot"
 
 images:
 - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/argobot'
