@@ -35,7 +35,7 @@ steps:
       echo "Waiting for SSH key propagation..."
       sleep 10
       gcloud compute ssh kharerishit@argobot-vm --zone=us-central1-a --tunnel-through-iap --command=" \
-        docker-credential-gcr configure-docker --quiet && \
+        docker-credential-gcr configure-docker --registries=gcr.io && \
         docker pull gcr.io/$PROJECT_ID/argobot:latest && \
         docker stop argobot || true && \
         docker rm argobot || true && \
