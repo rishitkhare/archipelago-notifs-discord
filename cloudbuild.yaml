@@ -1,6 +1,6 @@
 steps:
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['build', '--tag', 'gcr.io/$PROJECT_ID/my-image', '.']
+  args: ['build', '--tag', 'gcr.io/$PROJECT_ID', '.']
   env:
   - 'DOCKER_BUILDKIT=1'
 images:
