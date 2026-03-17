@@ -1,8 +1,31 @@
 steps:
+
+# Build the image
 - name: 'gcr.io/cloud-builders/docker'
   args: ['build', '--tag', 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/argobot', '.']
   env:
   - 'DOCKER_BUILDKIT=1'
+
+# Push the image to Artifact Registry
+- name: 'gcr.io/cloud-builders/docker'
+  args: [
+    'push', 
+    'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
+  ]
+
+# 3. Deploy the image to Cloud Run
+- name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+  entrypoint: gcloud
+  args:
+    - 'run'
+    - 'deploy'
+    - 'argobot'
+    - '--image'
+    - 'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
+    - '--region'
+    - 'us-central1'
+    - '--platform'
+    - 'managed'
 images:
 - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/argobot'
 
