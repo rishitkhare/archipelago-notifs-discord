@@ -17,15 +17,15 @@ steps:
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: gcloud
   args:
-    - 'run'
-    - 'deploy'
-    - 'argobot'
-    - '--image'
+    - 'compute'
+    - 'instances'
+    - 'update-container'
+    - 'argobot-vm'
+    - '--zone'
+    - 'us-central1-a'
+    - '--container-image'
     - 'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
-    - '--region'
-    - 'us-central1'
-    - '--platform'
-    - 'managed'
+
 images:
 - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/argobot'
 
