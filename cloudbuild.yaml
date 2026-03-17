@@ -26,7 +26,7 @@ steps:
 #     - '--container-image'
 #     - 'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
 #     - '--container-env-file'
-#     - '/home/kharerishit_gmail_com/.env'
+#     - '/home/kharerishit/.env'
 - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
   entrypoint: 'bash'
   args:
@@ -35,12 +35,13 @@ steps:
       echo "Waiting for SSH key propagation..."
       sleep 10
       gcloud compute ssh kharerishit@argobot-vm --zone=us-central1-a --tunnel-through-iap --command=" \
+        docker-credential-gcr configure-docker --quiet && \
         docker pull gcr.io/$PROJECT_ID/argobot:latest && \
         docker stop argobot || true && \
         docker rm argobot || true && \
         docker run -d \
           --name argobot \
-          --env-file ~/.env \
+          --env-file /home/kharerishit/.env \
           --restart unless-stopped \
           gcr.io/$PROJECT_ID/argobot:latest"
 
