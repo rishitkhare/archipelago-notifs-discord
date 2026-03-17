@@ -25,6 +25,8 @@ steps:
     - 'us-central1-a'
     - '--container-image'
     - 'us-central1-docker.pkg.dev/the-argo-490500/cloud-run-source-deploy/argobot'
+    - '--container-env-file'
+    - '/home/AdarshKhare/.env'
 
 images:
 - 'us-central1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/argobot'
