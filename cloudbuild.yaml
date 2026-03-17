@@ -40,7 +40,7 @@ steps:
         docker rm argobot || true && \
         docker run -d \
           --name argobot \
-          --env-file /var/opt/argobot/.env \
+          --env-file ~/.env \
           --restart unless-stopped \
           gcr.io/$PROJECT_ID/argobot:latest"
 
