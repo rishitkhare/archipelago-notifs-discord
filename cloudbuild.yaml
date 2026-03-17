@@ -32,6 +32,8 @@ steps:
   args:
     - '-c'
     - |
+      echo "Waiting for SSH key propagation..."
+      sleep 10
       gcloud compute ssh argobot-vm --zone=us-central1-a --tunnel-through-iap --command=" \
         docker pull gcr.io/$PROJECT_ID/argobot:latest && \
         docker stop argobot || true && \
