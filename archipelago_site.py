@@ -28,7 +28,7 @@ def get_recent_archipelago_actions(n=-1):
         utc_timestamp_string = utc_now.strftime("%Y-%m-%d %H:%M:%S UTC")
 
         print(f"[{utc_timestamp_string}] [WARNING ] Failed to retrieve site!")
-        return {}
+        return None
 
     table = html.fromstring(tracker_site_html).find(".//table[@id='checks-table']")
     columns = [col.text_content().strip() for col in table[0].xpath("tr/th")]

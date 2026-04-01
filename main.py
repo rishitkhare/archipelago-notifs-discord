@@ -75,11 +75,12 @@ async def archipelago_updates():
     # scrape the data from the webpage in the most recent visit. Then, compare it against the data
     # from the last visit to see what was newly added
     updated_actions = get_recent_archipelago_actions()
-    newly_added = check_for_new_archipelago_actions(recorded_actions, updated_actions)
+    if updated_actions is not None:
+        newly_added = check_for_new_archipelago_actions(recorded_actions, updated_actions)
 
-    await fire_notif_msgs(newly_added.values())
+        await fire_notif_msgs(newly_added.values())
 
-    recorded_actions = updated_actions
+        recorded_actions = updated_actions
 
     # log the time of the routine
 
